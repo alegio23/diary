@@ -173,7 +173,7 @@ a {
       rgba(122,31,43,0.08) 35px, rgba(122,31,43,0.08) 36px
     ),
     linear-gradient(135deg, var(--color-cream) 0%, var(--color-cream-2) 100%);
-  background-position: 0 56px, 0 0;
+  background-position: 0 0, 0 0;
   box-shadow: inset 0 0 40px rgba(0,0,0,0.12);
 }
 

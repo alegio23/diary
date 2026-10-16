@@ -1,4 +1,3 @@
-const STORAGE_KEY = 'diario-opened';
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (prefersReducedMotion) gsap.globalTimeline.timeScale(20);
 
@@ -103,7 +102,6 @@ function goToMessage() {
 
 function goToReveal({ animate = true } = {}) {
   showScreen(screenReveal);
-  localStorage.setItem(STORAGE_KEY, 'true');
   btnReplay.classList.remove('hidden');
 
   if (animate) {
@@ -133,8 +131,4 @@ book.addEventListener('keydown', (e) => {
 btnContinue.addEventListener('click', () => goToReveal());
 btnReplay.addEventListener('click', resetToCover);
 
-if (localStorage.getItem(STORAGE_KEY) === 'true') {
-  goToReveal({ animate: false });
-} else {
-  showScreen(screenCover);
-}
+showScreen(screenCover);
