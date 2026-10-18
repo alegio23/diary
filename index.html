@@ -121,26 +121,22 @@
 
 <!-- ===================== LETTORE PDF INTERATTIVO ===================== -->
 <div class="pdf-reader hidden" id="pdf-reader" aria-hidden="true">
-  <div class="pdf-reader-header">
-    <span class="pdf-reader-title">&#10022; Il nostro diario</span>
-    <button class="pdf-reader-close" id="pdf-close" aria-label="Chiudi il lettore">&times;</button>
-  </div>
+  <button class="pdf-reader-close" id="pdf-close" aria-label="Chiudi il lettore">&times;</button>
 
   <div class="pdf-reader-stage" id="pdf-stage">
     <button class="pdf-nav pdf-nav-prev" id="pdf-prev" aria-label="Pagina precedente">&#10094;</button>
 
     <div class="pdf-page-wrap" id="pdf-page-wrap">
-      <div class="pdf-leaf pdf-leaf-a" id="pdf-leaf-a"><canvas id="pdf-canvas-a"></canvas></div>
-      <div class="pdf-leaf pdf-leaf-b" id="pdf-leaf-b"><canvas id="pdf-canvas-b"></canvas></div>
+      <div class="pdf-leaf pdf-leaf-a" id="pdf-leaf-a"><div class="pdf-zoom-wrap" id="pdf-zoom-a"><canvas id="pdf-canvas-a"></canvas></div></div>
+      <div class="pdf-leaf pdf-leaf-b" id="pdf-leaf-b"><div class="pdf-zoom-wrap" id="pdf-zoom-b"><canvas id="pdf-canvas-b"></canvas></div></div>
       <div class="pdf-loading" id="pdf-loading">Caricamento del diario&hellip;</div>
+      <p class="pdf-zoom-hint" id="pdf-zoom-hint">Doppio tocco per ingrandire</p>
     </div>
 
     <button class="pdf-nav pdf-nav-next" id="pdf-next" aria-label="Pagina successiva">&#10095;</button>
   </div>
 
-  <div class="pdf-reader-footer">
-    <span class="pdf-page-indicator" id="pdf-page-indicator">&mdash; / &mdash;</span>
-  </div>
+  <span class="pdf-page-indicator" id="pdf-page-indicator">&mdash; / &mdash;</span>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
