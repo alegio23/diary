@@ -445,6 +445,16 @@ a {
   object-fit: cover;
 }
 
+/* Schermata messaggio: più compatta, deve entrare senza scroll */
+#screen-message {
+  padding-top: calc(18px + env(safe-area-inset-top));
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
+}
+#screen-message .page-content { gap: 12px; }
+#screen-message .photos-row { gap: 12px; margin-bottom: 0; }
+#screen-message .polaroid { padding: 7px 7px 12px; }
+#screen-message .polaroid-photo { width: 96px; height: 96px; }
+
 .placeholder-img {
   width: 128px;
   height: 128px;
@@ -468,16 +478,16 @@ a {
   background: rgba(255,255,255,0.55);
   border: 1px solid rgba(122,31,43,0.15);
   border-radius: 10px;
-  padding: 24px 22px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .message-line {
   margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.6;
+  font-size: 0.96rem;
+  line-height: 1.48;
   opacity: 0;
   transform: translateY(10px);
 }
@@ -485,10 +495,14 @@ a {
 .message-signature {
   align-self: flex-end;
   font-family: var(--font-script);
-  font-size: 2.4rem;
+  font-size: 2rem;
   color: var(--color-primary);
-  margin-top: 6px;
+  margin-top: 2px;
   margin-right: 6px;
+}
+
+#screen-message #btn-continue {
+  padding: 12px 26px;
 }
 
 /* ---------- Reveal ---------- */
