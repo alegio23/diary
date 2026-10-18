@@ -81,23 +81,23 @@ function goToMessage() {
 
   gsap.timeline()
     .from(photos, {
-      duration: 0.6,
+      duration: 0.85,
       y: 20,
       opacity: 0,
-      stagger: 0.15,
+      stagger: 0.22,
       ease: 'power2.out'
     })
     .to(lines, {
-      duration: 0.7,
+      duration: 0.95,
       y: 0,
       opacity: 1,
-      stagger: 0.35,
+      stagger: 0.45,
       ease: 'power2.out'
-    }, '+=0.1')
+    }, '+=0.15')
     .fromTo(btnContinue,
       { opacity: 0, y: 10 },
-      { opacity: 1, y: 0, duration: 0.5 },
-      '+=0.1'
+      { opacity: 1, y: 0, duration: 0.7 },
+      '+=0.15'
     );
 }
 
