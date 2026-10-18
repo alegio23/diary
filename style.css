@@ -452,8 +452,8 @@ a {
 }
 #screen-message .page-content { gap: 12px; }
 #screen-message .photos-row { gap: 12px; margin-bottom: 0; }
-#screen-message .polaroid { padding: 7px 7px 12px; }
-#screen-message .polaroid-photo { width: 96px; height: 96px; }
+#screen-message .polaroid { padding: 9px 9px 14px; }
+#screen-message .polaroid-photo { width: 118px; height: 118px; }
 
 .placeholder-img {
   width: 128px;
