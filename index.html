@@ -112,15 +112,39 @@
     </p>
 
     <div class="reveal-actions">
-      <a class="btn btn-primary" id="btn-read" href="assets/pdf/diario.pdf" target="_blank" rel="noopener">📖 Leggi online</a>
-      <a class="btn btn-secondary" id="btn-download" href="assets/pdf/diario.pdf" download="Il-nostro-diario.pdf">⬇ Scarica il diario</a>
+      <button class="btn btn-primary" id="btn-read">📖 Leggi ora</button>
     </div>
 
     <button class="btn-link hidden" id="btn-replay">&#10022; Rivivi l'apertura</button>
   </div>
 </section>
 
+<!-- ===================== LETTORE PDF INTERATTIVO ===================== -->
+<div class="pdf-reader hidden" id="pdf-reader" aria-hidden="true">
+  <div class="pdf-reader-header">
+    <span class="pdf-reader-title">&#10022; Il nostro diario</span>
+    <button class="pdf-reader-close" id="pdf-close" aria-label="Chiudi il lettore">&times;</button>
+  </div>
+
+  <div class="pdf-reader-stage" id="pdf-stage">
+    <button class="pdf-nav pdf-nav-prev" id="pdf-prev" aria-label="Pagina precedente">&#10094;</button>
+
+    <div class="pdf-page-wrap" id="pdf-page-wrap">
+      <div class="pdf-leaf pdf-leaf-a" id="pdf-leaf-a"><canvas id="pdf-canvas-a"></canvas></div>
+      <div class="pdf-leaf pdf-leaf-b" id="pdf-leaf-b"><canvas id="pdf-canvas-b"></canvas></div>
+      <div class="pdf-loading" id="pdf-loading">Caricamento del diario&hellip;</div>
+    </div>
+
+    <button class="pdf-nav pdf-nav-next" id="pdf-next" aria-label="Pagina successiva">&#10095;</button>
+  </div>
+
+  <div class="pdf-reader-footer">
+    <span class="pdf-page-indicator" id="pdf-page-indicator">&mdash; / &mdash;</span>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

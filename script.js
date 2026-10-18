@@ -11,6 +11,7 @@ const timelineFill = document.getElementById('timeline-fill');
 const timelineMarker = document.getElementById('timeline-marker');
 const btnContinue = document.getElementById('btn-continue');
 const btnReplay = document.getElementById('btn-replay');
+const btnRead = document.getElementById('btn-read');
 
 function createStars(count) {
   const container = document.getElementById('stars');
@@ -130,5 +131,160 @@ book.addEventListener('keydown', (e) => {
 });
 btnContinue.addEventListener('click', () => goToReveal());
 btnReplay.addEventListener('click', resetToCover);
+btnRead.addEventListener('click', () => pdfReader.open());
 
 showScreen(screenCover);
+
+/* ===================== Lettore PDF interattivo ===================== */
+
+const PDF_URL = 'assets/pdf/diario.pdf';
+
+const pdfReader = (() => {
+  const overlay = document.getElementById('pdf-reader');
+  const stage = document.getElementById('pdf-stage');
+  const wrap = document.getElementById('pdf-page-wrap');
+  const leafA = document.getElementById('pdf-leaf-a');
+  const leafB = document.getElementById('pdf-leaf-b');
+  const canvasA = document.getElementById('pdf-canvas-a');
+  const canvasB = document.getElementById('pdf-canvas-b');
+  const loading = document.getElementById('pdf-loading');
+  const btnPrev = document.getElementById('pdf-prev');
+  const btnNext = document.getElementById('pdf-next');
+  const btnClose = document.getElementById('pdf-close');
+  const indicator = document.getElementById('pdf-page-indicator');
+
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  let pdfDoc = null;
+  let currentPage = 1;
+  let totalPages = 0;
+  let activeLeaf = leafA;
+  let activeCanvas = canvasA;
+  let idleLeaf = leafB;
+  let idleCanvas = canvasB;
+  let isBusy = false;
+
+  async function renderPageToCanvas(num, canvas) {
+    const page = await pdfDoc.getPage(num);
+    const baseViewport = page.getViewport({ scale: 1 });
+
+    const availW = wrap.clientWidth || 320;
+    const availH = wrap.clientHeight || 480;
+    const fitScale = Math.min(availW / baseViewport.width, availH / baseViewport.height);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const renderScale = fitScale * dpr;
+
+    const viewport = page.getViewport({ scale: renderScale });
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    canvas.style.width = (viewport.width / dpr) + 'px';
+    canvas.style.height = (viewport.height / dpr) + 'px';
+
+    const ctx = canvas.getContext('2d');
+    await page.render({ canvasContext: ctx, viewport }).promise;
+  }
+
+  function updateIndicator() {
+    indicator.textContent = currentPage + ' / ' + totalPages;
+    btnPrev.disabled = currentPage <= 1;
+    btnNext.disabled = currentPage >= totalPages;
+  }
+
+  async function goTo(num, direction) {
+    if (isBusy || !pdfDoc || num < 1 || num > totalPages || num === currentPage) return;
+    isBusy = true;
+    btnPrev.disabled = true;
+    btnNext.disabled = true;
+
+    await renderPageToCanvas(num, idleCanvas);
+
+    const outgoing = activeLeaf;
+    const incoming = idleLeaf;
+    const hingeOrigin = direction === 'next' ? 'left center' : 'right center';
+    const outRotation = direction === 'next' ? -150 : 150;
+
+    gsap.set(incoming, { rotateY: 0, transformOrigin: hingeOrigin, zIndex: 1 });
+    gsap.set(outgoing, { zIndex: 2 });
+
+    await gsap.timeline()
+      .to(outgoing, {
+        duration: 0.85,
+        rotateY: outRotation,
+        transformOrigin: hingeOrigin,
+        ease: 'power2.inOut'
+      })
+      .call(() => {
+        gsap.set(outgoing, { rotateY: 0, zIndex: 0 });
+      });
+
+    activeLeaf = incoming;
+    activeCanvas = incoming === leafA ? canvasA : canvasB;
+    idleLeaf = outgoing;
+    idleCanvas = idleLeaf === leafA ? canvasA : canvasB;
+
+    currentPage = num;
+    updateIndicator();
+    isBusy = false;
+    btnPrev.disabled = currentPage <= 1;
+    btnNext.disabled = currentPage >= totalPages;
+  }
+
+  async function open() {
+    overlay.classList.remove('hidden');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    if (!pdfDoc) {
+      loading.classList.remove('hidden');
+      try {
+        pdfDoc = await pdfjsLib.getDocument(PDF_URL).promise;
+        totalPages = pdfDoc.numPages;
+        currentPage = 1;
+        await renderPageToCanvas(1, canvasA);
+        gsap.set(leafA, { rotateY: 0, zIndex: 2 });
+        gsap.set(leafB, { rotateY: 0, zIndex: 1 });
+        updateIndicator();
+      } catch (err) {
+        loading.textContent = 'Impossibile caricare il diario.';
+        return;
+      } finally {
+        loading.classList.add('hidden');
+      }
+    }
+  }
+
+  function close() {
+    overlay.classList.add('hidden');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  let touchStartX = null;
+  stage.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].clientX;
+  }, { passive: true });
+  stage.addEventListener('touchend', (e) => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    touchStartX = null;
+    if (Math.abs(dx) < 40) return;
+    if (dx < 0) goTo(currentPage + 1, 'next');
+    else goTo(currentPage - 1, 'prev');
+  }, { passive: true });
+
+  document.addEventListener('keydown', (e) => {
+    if (overlay.classList.contains('hidden')) return;
+    if (e.key === 'ArrowRight') goTo(currentPage + 1, 'next');
+    if (e.key === 'ArrowLeft') goTo(currentPage - 1, 'prev');
+    if (e.key === 'Escape') close();
+  });
+
+  btnNext.addEventListener('click', () => goTo(currentPage + 1, 'next'));
+  btnPrev.addEventListener('click', () => goTo(currentPage - 1, 'prev'));
+  btnClose.addEventListener('click', close);
+
+  return { open, close };
+})();
